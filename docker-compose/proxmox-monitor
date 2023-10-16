@@ -1,0 +1,30 @@
+version: "3"
+services:
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    network:
+      - monitoring_network:
+    volumes:
+      - grafana-volume:/var/lib/grafana
+  influx-db:
+    image: influxdb
+    container_name: influxdb
+    restart: unless-stoppoed
+    ports:
+      - 8086:8086
+      - 8089:8089/udp
+    networks:
+      - monitoring_network
+    volumes:
+      - influxdb-volume:/var/lib/influxdb
+networks:
+  monitoring_network:
+volumes:
+  grafana-volume:
+    external: true
+  influxdb-volume:
+    external: true
