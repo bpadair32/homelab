@@ -22,7 +22,7 @@
     - /var/lib/kubelet
     - /run/netns
     - /var/lib/rancher/k3s
-  loop_contorl:
+  loop_control:
     loop_var: mounted_fs
 
 - name: Remove all traces
