@@ -13,7 +13,7 @@ services:
   influx-db:
     image: influxdb
     container_name: influxdb
-    restart: unless-stoppoed
+    restart: unless-stopped
     ports:
       - 8086:8086
       - 8089:8089/udp
