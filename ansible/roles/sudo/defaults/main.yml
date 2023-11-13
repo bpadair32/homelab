@@ -1,0 +1,5 @@
+---
+sudoGroups:
+  - admins
+
+sudoUsers: []

@@ -1,0 +1,20 @@
+---
+- name: Ensure that all groups that should sudo can
+  community.general.sudoers:
+    commands: ALL
+    group: "{{ item }}"
+    nopassword: no
+    name: "{{ item }} sudoers rule"
+    validation: detect
+  with_items:
+    - "{{ sudoGroups }}"
+
+- name: Ensure that all users that should sudo can
+  community.general.sudoers:
+    commands: ALL
+    user: "{{ item }}"
+    nopassword: no
+    name: "{{ item }} sudoers rule"
+    validation: detect
+  with_items:
+    - "{{ sudoUsers }}"

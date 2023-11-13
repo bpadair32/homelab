@@ -1,0 +1,33 @@
+version:: "3"
+services:
+  reverse-proxy:
+    image: traefik:v2.9
+    command:
+      - "--log.level=DEBUG"
+      - "--api.dashboard=true"
+      - "--accesslog"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedByDefault=false"
+      - "--providers.docker.network=traefik-proxy"
+    networks:
+      - "traefik-proxy"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host('traefik1.adair.cloud')"
+      - "traefik.http.routers.dashbaord.tls=true"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.middlewares=auth"
+      - "traefik.http.middlewares.auth.basicauth.users=bpadair:$$2y$$05$$ltGFJtA5CNPhdY14ofk5TOEai6I00Aowa9ZzWKe7toz0WopxCUohW"
+      - "traefik.port=8080"
+      - "traefik.ping=true"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+networks:
+  traefik-proxy:
+    external: true

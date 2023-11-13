@@ -1,0 +1,3 @@
+---
+- name: Refresh metadata
+  ansible.builtin.command: yum clean metadata

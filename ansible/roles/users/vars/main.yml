@@ -1,0 +1,12 @@
+---
+adminUsers:
+  - username: bpadair
+    password: $6$DtpfcHp6.RXErKHV$cnfN636hog.Ma16w6YeT5NIwrJvzz8Sa2u3bpPDhCWd6KWpJ0CYwU/56.Q.8GOIJzzikXj8qhyYfTjTD6TrQ.0
+    fullname: Brad Adair
+    preferred_shell: /bin/zsh
+    ssh_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDFssI72uGJ145w5k0fENwcl66pWUjcpOwzxeAhc5ebzyVd2ahtrjupLsZZPG8Rn1PKhrLXXMtg/KjQ0R3pAvfY0r4Xbzg0uJfvlTNXfEOkmFNYNL0W4MDdy8K64Ym5AV2LOu7pdx3u2Ga6WBHDPnv8RPYIJNUF6q/icCvtwBypF5m2cy2BO+L41z/b6byqufil29pSMZ6N2sPjyOB1Bf388hWNPfPlugAqLVWBkH8v+5nq1LcGAZ57AOkutCfJh3XI93z5h3owakm3pHBwhjT17PG/vVnK91viqwDeK1a14kwgvmhvrw3mwVlQWVBY9aB+0P6W4RaYCGPY6nbcZ1F3
+    files:
+      - .tmux.conf
+      - .gitconfig
+      - .zshrc
+    homedir: /home/bpadair

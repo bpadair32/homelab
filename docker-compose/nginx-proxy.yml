@@ -1,5 +1,5 @@
 version: "3.8"
-service:
+services:
   app:
     image: "jc21/nginx-proxy-manager:latest"
     restart: unless-stopped

@@ -1,0 +1,36 @@
+---
+- name: Ensure zsh is installed
+  ansible.builtin.dnf:
+    name: zsh
+    state: present
+
+- name: Add admin users
+  ansible.builtin.user:
+    name: "{{ item.username }}"
+    comment: "{{ item.fullname }}"
+    groups: admins
+    append: yes
+    password: "{{ item.password }}"
+    shell: "{{ item.preferred_shell }}"
+    create_home: yes
+    home: "{{ item.homedir }}"
+  with_items:
+    - "{{ adminUsers }}"
+
+- name: Add SSH key to authorized_keys file
+  ansible.posix.authorized_key:
+    user: "{{ item.username }}"
+    manage_dir: yes
+    key: "{{ item.ssh_key }}"
+  with_items:
+    - "{{ adminUsers }}"
+
+- name: Copy dotfiles
+  ansible.builtin.copy:
+    src: "{{ item.0.username }}/{{ item.1 }}"
+    dest: "{{ item.0.homedir }}/{{ item.1 }}"
+    owner: "{{ item.0.username }}"
+    group: "{{ item.0.username }}"
+  with_subelements:
+    - "{{ adminUsers }}"
+    - files
