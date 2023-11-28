@@ -1,7 +1,8 @@
 ---
-k3s_version: v1.28.2+k3s1
+k3s_version: v1.28.3+k3s2
 ansible_user: bpadair
 systemd_dir: /etc/systemd/system
-master_ip: "{{ hostbvars[groups['master'][0]]['ansible_host'] | default(groups['master'][0]) }}"
+master_ip: "{{ hostvars[groups['master'][0]]['ansible_host'] | default(groups['master'][0]) }}"
 extra_server_args: ""
 extra_agent_args: ""
+k3s_server_location: /var/lib/rancher/k3s/server/server
