@@ -1,0 +1,56 @@
+---
+- name: Install yum-utils
+  yum:
+    name: yum-utils
+    state: present
+
+- name: Check if k3s is already installed
+  shell: ls /etc/rancher
+  register: k3s
+  changed_when: false
+  ignore_errors: true
+
+- name: Allow agents to connect to master
+  ansible.posix.firewalld:
+    port: 6443/tcp
+    state: enabled
+    permanent: true
+    immediate: true
+
+  when: master_node is true
+
+- name: Download and install K3s on master
+  shell: curl -sfL https://get.k3s.io | sh -
+  when:
+    - k3s is failed
+    - master_node is true
+
+- name: Get master node key
+  shell: cat /var/lib/rancher/k3s/server/node-token
+  register: master_token
+  when: master_node is true
+
+- name: Save master node key to facts
+  set_fact:
+    master_key: "{{master_token.stdout}}"
+  when: master_node is true
+
+- name: Install k3s on non-master nodes
+  shell: 'curl -sfL https://get.k3s.io | K3S_URL=https://{{hostvars[master][0]}}:6443 K3S_TOKEN=''{{hostvars[master][0]["master_key"]}}'' sh -'
+  when:
+    - master_node is false
+    - k3s is failed
+
+- name: Start and enable K3s on master node
+  systemd:
+    name: k3s
+    state: started
+    enabled: yes
+  when: master_node is true
+
+- name: Start and enable K3s on non-master nodes
+  systemd:
+    name: k3s-agent
+    state: started
+    enabled: yes
+  when: master_node is false
