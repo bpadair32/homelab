@@ -1,0 +1,5 @@
+---
+hosts: k3s-cluster
+become: true
+roles:
+  - k3s
