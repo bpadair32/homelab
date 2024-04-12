@@ -1,0 +1,35 @@
+version: "3.9"
+services:
+  calibre:
+    image: linuxserver/calibre:7.8.0
+    container_name: calibre
+    restart: unless-stopped
+    environment:
+      - TZ="America/New_York"
+      - GUAC_USER="bpadair"
+      - GUAC_PASS="60f480b24791901efb1fa7c71b4820eb"
+    network_mode: service:tailscale
+    depends_on:
+      tailscale:
+        condition: service_healthy
+    volumes:
+      - ./config:/config
+  tailscale:
+    hostname: calibre
+    image: tailscale/tailscale:latest
+    healthcheck:
+      test: ["CMD-SHELL", "tailscale status"]
+      interval: 1s 
+      timeout: 5s 
+      retries: 60
+    volumes:
+      - "./tailscale_var_lib:/var/lib"
+      - "/dev/net/tun:/dev/net/tun"
+    cap_add:
+      - net_admin
+      - sys_module
+      - net_raw
+    command: tailscaled
+    ports:
+      - 8081:8081/tcp
+      - 8080:8080/tcp
