@@ -10,14 +10,12 @@
   changed_when: false
   ignore_errors: true
 
-- name: Allow agents to connect to master
-  ansible.posix.firewalld:
-    port: 6443/tcp
-    state: enabled
-    permanent: true
-    immediate: true
-
-  when: master_node is true
+- name: Stop and disable firewalld
+  systemd:
+    name: firewalld
+    state: stopped
+    enabled: false
+    masked: true
 
 - name: Download and install K3s on master
   shell: curl -sfL https://get.k3s.io | sh -
@@ -36,7 +34,7 @@
   when: master_node is true
 
 - name: Install k3s on non-master nodes
-  shell: 'curl -sfL https://get.k3s.io | K3S_URL=https://{{hostvars[master][0]}}:6443 K3S_TOKEN=''{{hostvars[master][0]["master_key"]}}'' sh -'
+  shell: 'curl -sfL https://get.k3s.io | K3S_URL=https://{{ master_ip }}:6443 K3S_TOKEN={{ hostvars["192.168.0.35"]["master_key"]}} sh -'
   when:
     - master_node is false
     - k3s is failed

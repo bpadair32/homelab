@@ -1,0 +1,10 @@
+---
+- name: Patch RHEL based servers
+  ansible.builtin.import_tasks:
+    file: /Users/bpadair/repos/ansible/roles/patching/tasks/rhel.yml
+  when: ansible_os_family == "RedHat"
+
+- name: Patch Debian based servers
+  ansible.builtin.import_tasks:
+    file: /Users/bpadair/repos/ansible/roles/patching/tasks/debian.yml
+  when: ansible_os_family == "Debian"
