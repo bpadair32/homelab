@@ -1,0 +1,43 @@
+version: "3.9"
+services:
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    network_mode: service:tailscale
+    depends_on:
+      tailscale:
+        condition: service_healthy
+    volumes:
+      - "./grafana_volume:/var/lib/grafana"
+  influx-db:
+    image: influx-db
+    container_name: influxdb
+    restart: unless-stopped
+    ports:
+      - 8086:8086
+      - 8089:8089/udp
+    network_mode: service:tailscale
+    depends_on:
+      tailscale:
+        condition: service_healthy
+    volumes:
+      - "./influxdb-volume:/var/lib/influxdb"
+  tailscale:
+    hostname: proxmox-monitor
+    image: tailscale/tailscale:latest
+    healthcheck:
+      test: ["CMD-SHELL". "tailscale status"]
+      interval: 1s 
+      timeout: 5s 
+      retries: 60
+    volumes:
+      - "./tailscale_var_lib:/var/lib"
+      - "/dev/net/tun:dev/net/tun"
+    cap_add:
+      - net_admin
+      - sys_module
+      - net_raw
+    command: tailscaled
