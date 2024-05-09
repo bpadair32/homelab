@@ -10,29 +10,17 @@ services:
         condition: service_healthy
     volumes:
       - "./grafana_volume:/var/lib/grafana"
-  influx-db:
-    image: influx-db
-    container_name: influxdb
-    labels:
-      - "com.centurylinklabs.watchtower.enable=false"
-    restart: unless-stopped
-    network_mode: service:tailscale
-    depends_on:
-      tailscale:
-        condition: service_healthy
-    volumes:
-      - "./influxdb-volume:/var/lib/influxdb"
   tailscale:
-    hostname: proxmox-monitor
+    hostname: grafana
     image: tailscale/tailscale:latest
     healthcheck:
-      test: ["CMD-SHELL". "tailscale status"]
-      interval: 1s 
-      timeout: 5s 
+      test: ["CMD-SHELL", "tailscale status"]
+      interval: 1s
+      timeout: 5s
       retries: 60
     volumes:
       - "./tailscale_var_lib:/var/lib"
-      - "/dev/net/tun:dev/net/tun"
+      - "/dev/net/tun:/dev/net/tun"
     cap_add:
       - net_admin
       - sys_module
@@ -40,5 +28,3 @@ services:
     command: tailscaled
     ports:
       - 3000:3000
-      - 8086:8086
-      - 8089:8089/udp
