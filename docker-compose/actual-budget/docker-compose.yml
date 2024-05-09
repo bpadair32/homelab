@@ -3,8 +3,6 @@ services:
   actual_server:
     image: docker.io/actualbudget/actual-server:latest
     container_name: actual-budget
-    ports:
-      - '5006:5006'
     network_mode: service:tailscale
     depends_on:
       tailscale:
