@@ -4,8 +4,6 @@ services:
     image: grafana/grafana
     container_name: grafana
     restart: unless-stopped
-    ports:
-      - 3000:3000
     network_mode: service:tailscale
     depends_on:
       tailscale:
@@ -41,3 +39,7 @@ services:
       - sys_module
       - net_raw
     command: tailscaled
+    ports:
+      - 3000:3000
+      - 8086:8086
+      - 8089:8089/udp
