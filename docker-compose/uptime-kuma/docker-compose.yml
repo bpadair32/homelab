@@ -1,0 +1,31 @@
+version: "3.3"
+services:
+  uptime-kuma:
+    container_name: uptime-kuma
+    image: louislam/uptime-kuma
+    restart: always
+    network_mode: service:tailscale
+    depends_on:
+      tailscale:
+        condition:
+          service_healthy
+    volumes:
+      - "./uptime-kuma:/app-data"
+  tailscale:
+    hostname: uptime-kuma
+    image: tailscale/tailscale:latest
+    healthcheck:
+      test: ["CMD-SHELL", "tailscale status"]
+      interval: 1s
+      timeout: 5s
+      retries: 60
+    volumes:
+      - "./tailscale_var_lib:/var/lib"
+      - "/dev/net/tun:/dev/net/tun"
+    cap_add:
+      - net_admin
+      - sys_module
+      - net_raw
+    command: tailscaled
+    ports:
+      - 3001:3001
