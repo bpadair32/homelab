@@ -26,3 +26,5 @@ services:
       - sys_module
       - net_raw
     command: tailscaled
+    ports:
+      - 8888:8888
