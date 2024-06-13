@@ -27,4 +27,4 @@ services:
       - net_raw
     command: tailscaled
     ports:
-      - 8888:8888
+      - 8888:8080
