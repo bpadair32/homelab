@@ -14,6 +14,7 @@ services:
         condition: service_healthy
     volumes:
       - ./config:/config
+      - ./books:/books
   tailscale:
     hostname: calibre
     image: tailscale/tailscale:latest
