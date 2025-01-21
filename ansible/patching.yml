@@ -1,5 +1,6 @@
 ---
-- hosts: all
+- name: Ensure that all patches are installed
+  hosts: all
   become: true
   roles:
     - patching.yml
