@@ -1,7 +1,0 @@
----
-- name: Ensure that needed groups are created
-  ansible.builtin.group:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - admins

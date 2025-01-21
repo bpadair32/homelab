@@ -1,7 +1,0 @@
----
-- hosts: all:!home
-  become: yes
-  roles:
-    - groups
-    - sudo
-    - users
