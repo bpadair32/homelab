@@ -1,0 +1,28 @@
+---
+- hosts: k3s_master
+  gather_facts: true
+  become: true
+  tasks:
+    - name: Check if k3s is already installed #This is how we will get idempotency
+      ansible.builtin.command: ls /etc/rancher/k3s
+      register: k3s
+      changed_when: false
+      ignore_errors: true
+
+    - name: Stop and disable firewalld #K3S doesn't like firewalld
+      ansible.builtin.systemd:
+        name: firewalld
+        state: stopped
+        enabled: false
+        masked: true
+
+    - name: Download and install k3s
+      ansible.builtin.shell: curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--write-kubeconfig-mode=644" K3S_TOKEN=k3stoken  sh -s - server --cluster-init
+      when:
+        - k3s is failed
+
+    - name: Ensure that K3S service is started and enabled
+      ansible.builtin.systemd:
+        name: k3s
+        state: started
+        enabled: true
