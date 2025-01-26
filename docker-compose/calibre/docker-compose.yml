@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   calibre:
-    image: linuxserver/calibre:7.8.0
+    image: linuxserver/calibre:7.24.0
     container_name: calibre
     restart: unless-stopped
     environment:
