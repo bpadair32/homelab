@@ -1,10 +1,22 @@
 ---
-- name: Patch RHEL based servers
-  ansible.builtin.import_tasks:
-    file: /Users/bpadair/repos/ansible/roles/patching/tasks/rhel.yml
-  when: ansible_os_family == "RedHat"
+- name: Ensure yum utils is installed
+  ansible.builtin.yum:
+    name: yum-utils
+    state: present
 
-- name: Patch Debian based servers
-  ansible.builtin.import_tasks:
-    file: /Users/bpadair/repos/ansible/roles/patching/tasks/debian.yml
-  when: ansible_os_family == "Debian"
+- name: Upgrade packages
+  ansible.builtin.yum:
+    name: '*'
+    state: latest
+
+- name: Check if reboot is required
+  ansible.builtin.shell:
+    cmd: "needs-restarting -r"
+  changed_when: false
+  failed_when: reboot_required.rc != 0 and reboot_required.rc != 1
+  check_mode: false
+  register: reboot_required
+
+- name: Reboot if needed
+  ansible.builtin.reboot:
+  when: reboot_required.rc == 1
