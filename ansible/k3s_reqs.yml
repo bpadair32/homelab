@@ -1,0 +1,80 @@
+---
+- hosts: k3s_cluster
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Disable SELinux
+      ansible.posix.selinux:
+        state: disabled
+
+    - name: Install pip
+      ansible.builtin.dnf:
+        name: python-pip
+        state: present
+
+    - name: Enable IPv4 forwarding
+      ansible.posix.sysctl:
+        name: net.ipv4.ip_forward
+        value: "1"
+        state: present
+        reload: true
+
+    - name: Enable IPv6 forwarding
+      ansible.posix.sysctl:
+        name: net.ipv6.conf.all.forwarding
+        value: "1"
+        state: present
+        reload: true
+
+    - name: Add br_netfilter
+      ansible.builtin.copy:
+        content: "br_netfilter"
+        dest: /etc/modules-load.d/br_netfilter.conf
+        mode: 0600
+
+    - name: Set iptables bridge
+      ansible.posix.sysctl:
+        name: "{{ item }}"
+        value: "1"
+        state: present
+        reload: true
+      loop:
+        - net.bridge.bridge-nf-call-iptables
+        - net.bridge.bridge-nf-call-ip6tables
+
+    - name: Add /usr/local/bin to secure path
+      ansible.builtin.lineinfile:
+        line: "Defaults           secure_path = /sbin:/bin:/usr/sbin:/usr/local/bin"
+        regexp: "Defaults(\\s)*secure_path(\\s)*="
+        state: present
+        insertafter: EOF
+        path: /etc/sudoers
+        validate: "visudo -cf %s"
+
+    - name: Install iscsi
+      ansible.builtin.dnf:
+        name: iscsi-initiator-utils
+        state: present
+
+    - name: Enable iscsi_tcp modules
+      community.general.modprobe:
+        name: iscsi_tcp
+        state: present
+
+    - name: Ensure the iscsi service is started and enabled
+      ansible.builtin.systemd:
+        name: iscsid
+        state: started
+        enabled: true
+
+    - name: Ensure other requirements are isntalled
+      ansible.builtin.dnf:
+        name: git, nfs-utils, cryptsetup
+        state: present
+
+    - name: Install python requirements
+      ansible.builtin.pip:
+        name:
+          - openshift
+          - pyyaml
+          - kubernetes
