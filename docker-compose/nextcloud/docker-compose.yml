@@ -5,7 +5,7 @@ services:
     restart: always
     container_name: nextcloud-aio-mastercontainer
     volumes:
-      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config 
+      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - nextcloud-aio
@@ -20,21 +20,21 @@ services:
     image: caddy:alpine
     restart: unless-stopped
     environment:
-      NC_DOMAIN: office.hyena-banded.ts.net 
+      NC_DOMAIN: files.adair.cloud
     volumes:
       - type: bind
         source: ./Caddyfile
         target: /etc/caddy/Caddyfile
-      - type: volume 
+      - type: volume
         source: caddy_certs
         target: /certs
-      - type: volume 
+      - type: volume
         source: caddy_data
         target: /data
-      - type: volume 
+      - type: volume
         source: caddy_config
-        target: /config 
-      - type: volume 
+        target: /config
+      - type: volume
         source: tailscale_sock
         target: /var/run/tailscale
         read_only: true
@@ -49,12 +49,12 @@ services:
     restart: unless-stopped
     volumes:
       - /dev/net/tun:/dev/net/tun
-    - type: volume 
-      source: tailscale
-      target: /var/lib/tailscale
-    - type: volume 
-      source: tailscale_sock
-      target: /tmp 
+      - type: volume
+        source: tailscale
+        target: /var/lib/tailscale
+      - type: volume
+        source: tailscale_sock
+        target: /tmp
     cap_add:
       - NET_ADMIN
       - NET_RAW
