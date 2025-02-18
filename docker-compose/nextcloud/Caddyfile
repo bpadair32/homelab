@@ -1,14 +1,6 @@
-{
-    email: bradadair@gmail.com
-
-}
-
-(cloudflare) {
+https://files.adair.cloud:443 {
+    reverse_proxy localhost:11000
     tls {
         dns cloudflare 6krACpy6wPnFx-m3TVKb2Kp_znVIlE6U0Ih5Ih9B
       }
   }
-https://{$NC_DOMAIN}:443 {
-  import cloudflare
-  reverse_proxy nextcloud-aio-apache:11000
-}
