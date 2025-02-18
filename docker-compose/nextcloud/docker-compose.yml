@@ -34,32 +34,12 @@ services:
       - type: volume
         source: caddy_config
         target: /config
-      - type: volume
-        source: tailscale_sock
-        target: /var/run/tailscale
-        read_only: true
-    network_mode: service:tailscale
-  tailscale:
-    image: tailscale/tailscale:latest
-    environment:
-      TS_HOSTNAME: office
-      TS_AUTH_KEY: tskey-client-k1fubtQYpD11CNTRL-c4Qam4wQ58BYVVmKhhCJ9BDvTCdrqQHY
-      TS_EXTRA_ARGS: --advertise-tags=tag:nextcloud
-    init: true
-    restart: unless-stopped
-    volumes:
-      - /dev/net/tun:/dev/net/tun
-      - type: volume
-        source: tailscale
-        target: /var/lib/tailscale
-      - type: volume
-        source: tailscale_sock
-        target: /tmp
-    cap_add:
-      - NET_ADMIN
-      - NET_RAW
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 80:80
+      - 443:443
     networks:
-      - nextcloud-aio
+      - caddy
 volumes:
   nextcloud_aio_mastercontainer:
     name: nextcloud_aio_mastercontainer
@@ -69,15 +49,6 @@ volumes:
     name: caddy_data
   caddy_config:
     name: caddy_config
-  tailscale:
-    name: tailscale
-  tailscale_sock:
-    name: tailscale_sock
 networks:
-  nextcloud-aio:
-    name: nextcloud-aio
-    driver: bridge
-    enable_ipv6: false
-    driver_opts:
-      com.docker.network.driver.mtu: "9001"
-      com.docker.network.bridge.host_binding_ipv4: "127.0.0.1"
+  caddy:
+    external: true
