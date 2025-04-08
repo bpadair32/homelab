@@ -1,0 +1,155 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: calibre-config
+  namespace: basic-apps
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: calibre-books
+  namespace: basic-apps
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calibre
+  namespace: basic-apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: calibre
+  template:
+    metadata:
+      labels:
+        app: calibre
+    spec:
+      securityContext:
+        fsGroup: 911
+      initContainers:
+        - name: volume-permissions
+          image: busybox
+          command:
+            [
+              "sh",
+              "-c",
+              "chown -R 911:911 /config /books && chmod -R 755 /config /books",
+            ]
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: books
+              mountPath: /books
+          securityContext:
+            runAsUser: 0
+      containers:
+        - name: calibre
+          image: linuxserver/calibre:7.26.0
+          env:
+            - name: TZ
+              value: "America/New_York"
+            - name: GUAC_USER
+              value: "bpadair"
+            - name: GUAC_PASS
+              value: "60f480b24791901efb1fa7c71b4820eb"
+            - name: PUID
+              value: "911"
+            - name: PGID
+              value: "911"
+          securityContext:
+            runAsUser: 0
+            allowPrivilegeEscalation: true
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 8081
+              name: content
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: books
+              mountPath: /books
+            - name: run
+              mountPath: /run
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: calibre-config
+        - name: books
+          persistentVolumeClaim:
+            claimName: calibre-books
+        - name: run
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: calibre
+  namespace: basic-apps
+spec:
+  selector:
+    app: calibre
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+    - name: content
+      port: 8081
+      targetPort: content
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: calibre-ingress
+  namespace: basic-apps
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.middlewares: basic-apps-calibre-stripprefix@kubernetescrd
+spec:
+  rules:
+    - host: books.adair.cloud
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: calibre
+                port:
+                  name: http
+          - path: /content
+            pathType: Prefix
+            backend:
+              service:
+                name: calibre
+                port:
+                  name: content
+  tls:
+    - secretName: calibre-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: calibre-stripprefix
+  namespace: basic-apps
+spec:
+  stripPrefix:
+    prefixes:
+      - /content
+    forceSlash: true

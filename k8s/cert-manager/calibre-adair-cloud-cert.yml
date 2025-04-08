@@ -1,0 +1,16 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: calibre-cert
+  namespace: basic-apps
+spec:
+  secretName: calibre-tls
+  renewBefore: 240h
+  duration: 2160h
+  commonName: books.adair.cloud
+  dnsNames:
+    - books.adair.cloud
+  issuerRef:
+    name: adair-cloud-issuer
+    kind: ClusterIssuer

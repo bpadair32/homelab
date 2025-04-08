@@ -1,0 +1,16 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: pihole-ui-cert
+  namespace: pihole
+spec:
+  secretName: pihole-ui-tls
+  renewBefore: 240h
+  duration: 2160h
+  commonName: pihole.adair.cloud
+  dnsNames:
+    - pihole.adair.cloud
+  issuerRef:
+    name: adair-cloud-issuer
+    kind: ClusterIssuer

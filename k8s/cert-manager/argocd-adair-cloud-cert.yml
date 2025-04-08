@@ -1,0 +1,16 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: argocd-ui-cert
+  namespace: argocd
+spec:
+  secretName: argocd-server-tls
+  renewBefore: 240h
+  duration: 2160h
+  commonName: argocd.adair.cloud
+  dnsNames:
+    - argocd.adair.cloud
+  issuerRef:
+    name: adair-cloud-issuer
+    kind: ClusterIssuer
