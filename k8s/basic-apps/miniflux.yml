@@ -31,7 +31,7 @@ metadata:
 type: Opaque
 data:
   username: bWluaWZsdXg=
-  password: TjFjaDBsQHNSdWxlcw==
+  password: bWluaWZsdXg=
 ---
 apiVersion: v1
 kind: Secret
