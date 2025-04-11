@@ -191,7 +191,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host('feed-reader.adair.cloud')
+    - match: Host(`feed-reader.adair.cloud`)
       kind: Rule
       services:
         - name: miniflux
@@ -218,7 +218,7 @@ spec:
   entryPoints:
     - web
   routes:
-    - match: Host('feed-reader.adair.cloud')
+    - match: Host(`feed-reader.adair.cloud`)
       kind: Rule
       middlewares:
         - name: redirect-https
