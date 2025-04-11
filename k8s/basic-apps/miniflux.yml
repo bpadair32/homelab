@@ -45,7 +45,7 @@ spec:
             - containerPort: 8080
           env:
             - name: DATABASE_URL
-              value: "sqlits:///var/lib/miniflux/db.sqlite"
+              value: "sqlite:///var/lib/miniflux/db.sqlite"
             - name: RUN_MIGRATIONS
               value: "1"
             - name: ADMIN_USERNAME
