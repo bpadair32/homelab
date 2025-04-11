@@ -83,14 +83,12 @@ spec:
               value: "1"
             - name: ADMIN_USERNAME
               valueFrom:
-                secretKeyRef:
-                  name: miniflux-creds
-                  key: admin-username
+                secretKeyRef: miniflux-creds
+                key: admin-username
             - name: ADMIN_PASSWORD
               valueFrom:
-                secretKeyRef:
-                  name: miniflux-creds
-                  key: admin-password
+                secretKeyRef: miniflux-creds
+                key: admin-password
           volumeMounts:
             - name: miniflux
               mountPath: /var/lib/miniflux
