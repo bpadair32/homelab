@@ -105,6 +105,8 @@ spec:
         - name: miniflux
           persistentVolumeClaim:
             claimName: miniflux
+      strategy:
+        type: Recreate
 ---
 apiVersion: v1
 kind: Service
