@@ -81,6 +81,8 @@ spec:
                   key: database-url
             - name: RUN_MIGRATIONS
               value: "1"
+            - name: CREATE_ADMIN
+              value: "1"
             - name: ADMIN_USERNAME
               valueFrom:
                 secretKeyRef:
