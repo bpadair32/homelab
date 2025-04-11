@@ -76,9 +76,8 @@ spec:
           env:
             - name: DATABASE_URL
               valueFrom:
-                configMapKeyRef:
-                  name: miniflux-cm
-                  key: database-url
+                configMapKeyRef: miniflux-cm
+                key: database-url
             - name: RUN_MIGRATIONS
               value: "1"
             - name: ADMIN_USERNAME
