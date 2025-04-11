@@ -63,6 +63,8 @@ spec:
   selector:
     matchLabels:
       app: miniflux
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -105,8 +107,6 @@ spec:
         - name: miniflux
           persistentVolumeClaim:
             claimName: miniflux
-      strategy:
-        type: Recreate
 ---
 apiVersion: v1
 kind: Service
