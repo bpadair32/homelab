@@ -1,0 +1,16 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: miniflux-cert
+  namespace: basic-apps
+spec:
+  secretName: miniflux-tls
+  renewBefore: 240h
+  duration: 2160h
+  commonName: feed-reader.adair.cloud
+  dnsNames:
+    - feed-reader.adair.cloud
+  issuerRef:
+    name: adair-cloud-issuer
+    kind: ClusterIssuer
