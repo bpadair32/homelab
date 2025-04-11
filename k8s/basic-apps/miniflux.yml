@@ -12,6 +12,28 @@ spec:
       storage: 1Gi
 ---
 apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-data
+  namespace: basic-apps
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-creds
+  namespace: basic-apps
+type: Opaque
+data:
+  username: bWluaWZsdXg=
+  password: TjFjaDBsQHNSdWxlcw==
+---
+apiVersion: v1
 kind: Secret
 metadata:
   name: miniflux-creds
@@ -20,6 +42,14 @@ type: Opaque
 data:
   admin-username: YWRtaW4=
   admin-password: RkBsY29uMTk=
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: miniflux-cm
+  namespace: basic-apps
+data:
+  database-url: "postgresql://miniflux:miniflux@miniflux-db/miniflux?sslmode=disable"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -45,7 +75,10 @@ spec:
             - containerPort: 8080
           env:
             - name: DATABASE_URL
-              value: "sqlite:///var/lib/miniflux/db.sqlite"
+              valueFrom:
+                configMapRef:
+                  name: miniflux-cm
+                  key: database-url
             - name: RUN_MIGRATIONS
               value: "1"
             - name: ADMIN_USERNAME
@@ -84,6 +117,67 @@ spec:
   ports:
     - port: 80
       targetPort: 8080
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: miniflux-db
+  namespace: basic-apps
+  labels:
+    app: miniflux-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: miniflux-db
+  template:
+    metadata:
+      labels:
+        app: miniflux-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:14-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef: postgres-creds
+                key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef: postgres-creds
+                key: password
+            - name: POSTGRES_DB
+              value: "miniflux"
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: postgres-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: miniflux-db
+  namespace: basic-apps
+spec:
+  selector:
+    app: miniflux-db
+  ports:
+    - port: 5432
+      targetPort: 5432
   type: ClusterIP
 ---
 apiVersion: traefik.containo.us/v1alpha1
