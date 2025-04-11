@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: homelab-repo
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  type: git
+  url: git@github.com:bpadair32/homelab.git
+  sshPrivateKey: |
+    -----BEGIN OPENSSH PRIVATE KEY-----
+    b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAaAAAABNlY2RzYS
+    1zaGEyLW5pc3RwMjU2AAAACG5pc3RwMjU2AAAAQQQaoThIcsHA5QcKE1DO3M4zSR/cyq/K
+    eqw1uwOoXXr9xvZVzmziiiddJEN+gbn/bz1mKxCrM5W58JEEwjvSLy5PAAAAqJGiZsaRom
+    bGAAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBBqhOEhywcDlBwoT
+    UM7czjNJH9zKr8p6rDW7A6hdev3G9lXObOKKJ10kQ36Buf9vPWYrEKszlbnwkQTCO9IvLk
+    8AAAAhAKOoAMll0S4jlg1gXKLrDkVHIw1mjcBGaPZPB07PAd4dAAAADGJwYWRhaXJAamVk
+    aQECAw==
+    -----END OPENSSH PRIVATE KEY-----
