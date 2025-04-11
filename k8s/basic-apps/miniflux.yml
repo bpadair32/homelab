@@ -76,18 +76,21 @@ spec:
           env:
             - name: DATABASE_URL
               valueFrom:
-                configMapKeyRef: miniflux-cm
-                key: database-url
+                configMapKeyRef:
+                  name: miniflux-cm
+                  key: database-url
             - name: RUN_MIGRATIONS
               value: "1"
             - name: ADMIN_USERNAME
               valueFrom:
-                secretKeyRef: miniflux-creds
-                key: admin-username
+                secretKeyRef:
+                  name: miniflux-creds
+                  key: admin-username
             - name: ADMIN_PASSWORD
               valueFrom:
-                secretKeyRef: miniflux-creds
-                key: admin-password
+                secretKeyRef:
+                  name: miniflux-creds
+                  key: admin-password
           volumeMounts:
             - name: miniflux
               mountPath: /var/lib/miniflux
@@ -141,12 +144,14 @@ spec:
           env:
             - name: POSTGRES_USER
               valueFrom:
-                secretKeyRef: postgres-creds
-                key: username
+                secretKeyRef:
+                  name: postgres-creds
+                  key: username
             - name: POSTGRES_PASSWORD
               valueFrom:
-                secretKeyRef: postgres-creds
-                key: password
+                secretKeyRef:
+                  name: postgres-creds
+                  key: password
             - name: POSTGRES_DB
               value: "miniflux"
           volumeMounts:
