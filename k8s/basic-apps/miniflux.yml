@@ -5,6 +5,7 @@ metadata:
   name: miniflux
   namespace: basic-apps
 spec:
+  storageClassName: longhorn
   accessModes:
     - ReadWriteOnce
   resources:
@@ -17,6 +18,7 @@ metadata:
   name: postgres-data
   namespace: basic-apps
 spec:
+  storageClassName: longhorn
   accessModes:
     - ReadWriteOnce
   resources:
