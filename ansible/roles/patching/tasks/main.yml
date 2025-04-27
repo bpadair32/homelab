@@ -19,4 +19,5 @@
 
 - name: Reboot if needed
   ansible.builtin.reboot:
+  serial: 1
   when: reboot_required.rc == 1

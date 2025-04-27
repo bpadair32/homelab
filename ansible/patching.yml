@@ -1,6 +1,6 @@
 ---
 - name: Ensure that all patches are installed
-  hosts: all
+  hosts: all:!firewall
   become: true
   roles:
     - patching
