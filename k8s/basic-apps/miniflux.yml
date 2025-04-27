@@ -84,7 +84,7 @@ spec:
                   name: miniflux-cm
                   key: database-url
             - name: RUN_MIGRATIONS
-              value: "1"
+              value: "0"
             - name: ADMIN_USERNAME
               valueFrom:
                 secretKeyRef:
