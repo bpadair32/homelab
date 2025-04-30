@@ -1,5 +1,0 @@
----
-chezmoi_redhat_architectures:
-  x86_64: x86_64
-  arm64: aarch64
-  aarch64: aarch64
