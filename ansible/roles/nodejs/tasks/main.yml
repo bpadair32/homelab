@@ -1,0 +1,11 @@
+---
+- name: Install NodeJS
+  ansible.builtin.dnf:
+    name: "@nodejs:{{ version }}"
+    state: present
+
+- name: Install pm2
+  community.general.npm:
+    name: pm2 
+    global: true 
+    state: present
