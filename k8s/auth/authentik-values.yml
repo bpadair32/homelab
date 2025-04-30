@@ -1,0 +1,22 @@
+authentik:
+  secret_key: "plMCSXj+ars/nwhhPnH68GOhN34CfaKxj5WBDFm1zGgIdMl3ngqoYOh0qSLHza2F2haNm4mNkyd8iUgg"
+  error_reporting:
+    enabled: true
+  postgresql:
+    password: "ZL+SRN7uipV9IpG0XMtdfc4bVce0xK6nwqjCYVvygFlUgAtjGToZL8ruGvhNG0U8qI4jQNqLuV3H2aZw"
+server:
+  ingress:
+    ingressClassName: traefik
+    enabled: true
+    hosts:
+      - auth.adair.cloud
+    tls:
+      - secretName: auth-ui-tls
+        hosts:
+          - auth.adair.cloud
+postgresql:
+  enabled: true
+  auth:
+    password: "ZL+SRN7uipV9IpG0XMtdfc4bVce0xK6nwqjCYVvygFlUgAtjGToZL8ruGvhNG0U8qI4jQNqLuV3H2aZw"
+redis:
+  enabled: true
