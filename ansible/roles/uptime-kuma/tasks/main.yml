@@ -1,0 +1,40 @@
+---
+- name: Ensure that Git is installed
+  ansible.builtin.dnf:
+    name: git 
+    state: present 
+
+- name: Clone the uptime-kuma repo
+  ansible.builtin.git:
+    accept_hostkey: true 
+    dest: /home/bpadair/uptime-kuma 
+    repo: https://github.com/louislam/uptime-kuma.git 
+
+- name: Fix permissions
+  ansible.builtin.file:
+    path: /home/bpadair/uptime-kuma 
+    recurse: true 
+    owner: bpadair 
+    group: bpadair 
+
+- name: Install uptime-kuma 
+  ansible.builtin.shell: |
+    npm run setup
+  args:
+    executable: /bin/bash 
+    chdir: /home/bpadair/uptime-kuma 
+   
+- name: Start running uptime-kuma 
+  ansible.builtin.shell: |
+    pm2 -f start server/server.js
+  args:
+    executable: /bin/bash 
+    chdir: /home/bpadair/uptime-kuma
+  become: false
+
+- name: Allow connections to uptime-kuma through the firewall
+  ansible.posix.firewalld:
+    port: 9000/tcp
+    permanent: true 
+    immediate: true 
+    state: enabled

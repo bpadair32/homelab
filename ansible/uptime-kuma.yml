@@ -1,0 +1,8 @@
+---
+- name: Install Uptime-Kuma
+  hosts: monitoring
+  become: true
+  gather_facts: true
+  roles:
+    - nodejs
+    - uptime-kuma
