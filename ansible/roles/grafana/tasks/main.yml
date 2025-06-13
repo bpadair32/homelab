@@ -1,0 +1,54 @@
+---
+- name: add grafana repo
+  ansible.builtin.yum_repository:
+    name: grafana 
+    description: Grafana Repository 
+    baseurl: "https://packages.grafana.com/oss/rpm"
+    gpgcheck: true
+    gpgkey: "https://packages.grafana.com/gpg.key"
+    enabled: true
+
+- name: install grafana 
+  ansible.builtin.dnf:
+    name: grafana 
+    state: present
+
+- name: create grafana user
+  ansible.builtin.user:
+    name: grafana
+    group: grafana 
+    comment: "Grafana service user"
+    system: true
+    shell: /sbin/nologin
+
+- name: update ownership of grafana directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: grafana 
+    group: grafana 
+    recurse: true
+  with_items:
+    - /var/lib/grafana 
+    - /etc/grafana 
+    - /var/log/grafana 
+  
+- name: configure grafana to run as grafana user
+  ansible.builtin.lineinfile:
+    path: /etc/sysconfig/grafana-server
+    regexp: "^USER="
+    line: "USER=grafana"
+    create: yes 
+
+- name: copy grafana config file
+  ansible.builtin.template:
+    src: grafana.ini.j2
+    dest: /etc/grafana/grafana.ini 
+    owner: grafana 
+    group: grafana
+    mode: 0644
+
+- name: ensure that grafana service is started and enabled
+  ansible.builtin.systemd:
+    name: grafana-server 
+    state: started
+    enabled: true

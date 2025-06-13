@@ -1,0 +1,82 @@
+---
+- name: Create prometheus group
+  ansible.builtin.group:
+    name: "{{ prometheus_group }}"
+    state: present 
+
+- name: Create prometheus user
+  ansible.builtin.user:
+    name: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    system: true
+    shell: /sbin/nologin
+
+- name: Create directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory 
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    mode: 0755
+  with_items:
+    - "{{ prometheus_install_dir }}"
+    - "{{ prometheus_config_dir }}"
+    - "{{ prometheus_data_dir }}"
+
+- name: Download prometheus binary
+  ansible.builtin.get_url:
+    url: "{{ prometheus_binary_url }}"
+    dest: "/tmp/prometheus.tar.gz"
+  
+- name: Extract prometheus 
+  ansible.builtin.unarchive:
+    src: /tmp/prometheus.tar.gz
+    dest: "{{ prometheus_install_dir }}"
+    remote_src: true 
+    creates: "{{ prometheus_install_dir }}/prometheus"
+
+- name: Copy prometheus binary to /usr/local/bin 
+  ansible.builtin.copy:
+    src: "{{ prometheus_install_dir }}/prometheus-{{ prometheus_version }}.linux-amd64/prometheus"
+    dest: /usr/local/bin/prometheus
+    owner: root
+    group: root
+    mode: 0755
+    remote_src: true 
+
+- name: Copy prometheus config file 
+  ansible.builtin.template:
+    src: prometheus.yml.j2
+    dest: "{{ prometheus_config_dir }}/prometheus.yml"
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    mode: 0644
+  notify: restart prometheus 
+
+- name: Create prometheus service
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/prometheus.service 
+    content: |
+      [Unit]
+      Description=Prometheus Server 
+      After=network.target
+
+      [Service]
+      User={{ prometheus_user }}
+      Group={{ prometheus_group }}
+      ExecStart=/usr/local/bin/prometheus \
+        --config.file={{ prometheus_config_dir }}/prometheus.yml \
+        --storage.tsdb.path={{ prometheus_data_dir }}
+
+      [Install]
+      WantedBy=multi-user.target 
+    mode: 0644 
+  notify: reload daemons
+
+- name: Start prometheus 
+  ansible.builtin.systemd:
+    daemon_reload: true 
+    name: prometheus 
+    state: started
+    enabled: true 
+
